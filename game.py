@@ -1,5 +1,7 @@
 import time
 import random
+import pygame
+
 
 def check_rules():
     proximity_matrix = []
@@ -38,16 +40,40 @@ def show_field(field):
     for row in field:
         print(row)
 
-
 if __name__=="__main__":
-    field_size = 10
+
+    pygame.init()
+    win = pygame.display.set_mode((1000, 1000))
+    pygame.display.set_caption("First Game")
+
+    field_size = 20
     field = []
+
     for i in range(1, field_size):
         field.append([random.randint(0,1)] * (field_size-1))
     show_field(field)
-    for i in range(2):
-        check_rules()
-        show_field(field)
-        time.sleep(.500)
+    run = True
+
+    while run:
+        pygame.time.delay(100)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            keys = pygame.key.get_pressed()
+
+            if keys[pygame.K_LEFT]:
+
+                win.fill((0, 0, 0))
+                for row in range(0, field_size - 1):
+                    for col in range(0, field_size - 1):
+                        if field[row][col] == 0:
+                            pygame.draw.rect(win, (0, 0, 0), (40 * row, 40 * col, 10, 10))
+                        else:
+                            pygame.draw.rect(win, (255, 255, 255), (40 * row, 40 * col, 10, 10))
+                pygame.display.update()
+                check_rules()
+                # show_field(field)
+                # time.sleep(.500)
 
 
