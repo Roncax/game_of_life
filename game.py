@@ -36,7 +36,7 @@ def check_rules():
                 field[row][column] = 1
 
 
-# for the CLI version of the game
+# for the CLI version of the game (not used with GUI)
 def show_field():
     print("\n")
     for row in field:
@@ -45,7 +45,7 @@ def show_field():
 
 def game_loop ():
     pygame.display.set_caption("Conway's Game of Life - Game")
-    set_field(False)
+    set_random_field(False)
     pygame.draw.rect(win, (255, 255, 255), (0, 0, display_x, display_y), field_thick)
     pause = False
     run = True
@@ -67,7 +67,7 @@ def game_loop ():
             if keys[pygame.K_d]:    # decrease velocity
                 ref_rate = ref_rate - 10
             if keys[pygame.K_1]:    # random reset
-                set_field(True)
+                set_random_field(True)
         if not pause:
             for row in range(0, field_y):
                 for col in range(0, field_x):
@@ -80,7 +80,7 @@ def game_loop ():
             check_rules()
 
 
-def set_field(reset):    # random and reset initialization
+def set_random_field(reset):    # random and reset initialization
     if reset:
         for i in range(field_y):
             for n in range(field_x):
@@ -92,24 +92,40 @@ def set_field(reset):    # random and reset initialization
                 row.append(random.randint(0, 1))
             field.append(row)
 
-
+def set_custom_field():
+    for i in range(field_y):
+        row = [[0]*field_x]
+    field.append(row)
 
 
 
 
 def setup_page():
     pygame.display.set_caption("Conway's Game of Life - Setup")
-    play_pos = [display_x/2 - 50, display_y/2 - 25]  # play button position X and Y
-    button_play = pygame.Rect(play_pos[0], play_pos[1], 100, 50)  # left, top width, height
+    button_x = 100
+    button_y = 50
+    command_bar_x = 0
+    command_bar_y = display_y - cmd_size
+
+    button_play = pygame.Rect(display_x/2 - 50, display_y/2 - 25, button_x, button_y)  # left, top width, height
+    button_increase = pygame.Rect(command_bar_x, command_bar_y, button_x, button_y)  # left, top width, height
+    button_decrease = pygame.Rect(command_bar_x + 200, command_bar_y, button_x, button_y)  # left, top width, height
+    button_pause = pygame.Rect(command_bar_x + 400, command_bar_y, button_x, button_y)  # left, top width, height
+    button_reset = pygame.Rect(command_bar_x + 600, command_bar_y, button_x, button_y)  # left, top width, height
+
     # creates a rect object
     # The rect method is similar to a list but with a few added perks
     # for example if you want the position of the button you can simply type
     # button.x or button.y or if you want size you can type button.width or
     # height. you can also get the top, left, right and bottom of an object
     # with button.right, left, top, and bottom
+    pygame.draw.rect(win, [0, 200, 0], button_increase)
+    pygame.draw.rect(win, [0, 200, 0], button_decrease)
+    pygame.draw.rect(win, [0, 200, 0], button_pause)
+    pygame.draw.rect(win, [0, 200, 0], button_reset)
 
     pygame.draw.rect(win, [0, 200, 0], button_play)  # draw button
-    win.blit(font.render('Play!', True, (0, 0, 0)), (play_pos[0] + 25, play_pos[1] + 12))
+    win.blit(font.render('Play!', True, (0, 0, 0)), (display_x/2 - 25, display_y/2 - 13))
 
     pygame.display.update()
 
@@ -149,9 +165,10 @@ if __name__ == "__main__":
     field_thick = 5
     display_x = (field_x) * dist_x + field_thick
     display_y = (field_y) * dist_y + field_thick
+    cmd_size = 50
     font = pygame.font.SysFont('Arial', 25)
 
-    win = pygame.display.set_mode((display_x, display_y))
+    win = pygame.display.set_mode((display_x, display_y + cmd_size))
 
     if setup_page():
         game_loop()
